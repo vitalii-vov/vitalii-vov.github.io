@@ -15,14 +15,18 @@ def get_visible_dirs_and_files(path: Path):
     return sorted(folders), sorted(files)
 
 def generate_index(root_path: str):
-    root = Path(root_path)
+    root = Path(root_path).resolve()
 
-    # Гарантированно обходим ВСЕ папки, включая те, где только файлы
+    # Сначала находим все папки, включая корень
     all_dirs = [p for p in root.rglob('*') if p.is_dir()]
-    all_dirs.append(root)  # не забываем про сам корень
+    all_dirs.append(root)
 
     for path in all_dirs:
         folders, files = get_visible_dirs_and_files(path)
+        print(f"Processing: {path}")
+        print(f"  Folders: {folders}")
+        print(f"  Files: {files}")
+
         index = {
             "folders": folders,
             "files": files
