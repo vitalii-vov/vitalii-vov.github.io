@@ -3,16 +3,13 @@ import json
 
 def generate_index(root):
     for current_dir, dirs, files in os.walk(root):
-        # Пропускаем скрытые папки
-        dirs[:] = [d for d in dirs if not d.startswith('.')]
-        files = [f for f in files if not f.startswith('.') and f != 'index.json']
-
-        folders = sorted(dirs)
-        file_names = sorted(files)
+        # Не исключаем dirs[:] — иначе os.walk() не зайдёт в подкаталоги
+        visible_dirs = [d for d in dirs if not d.startswith('.')]
+        visible_files = [f for f in files if not f.startswith('.') and f != 'index.json']
 
         index = {
-            "folders": folders,
-            "files": file_names
+            "folders": sorted(visible_dirs),
+            "files": sorted(visible_files)
         }
 
         index_path = os.path.join(current_dir, 'index.json')
