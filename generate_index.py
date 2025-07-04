@@ -14,24 +14,12 @@ def get_visible_dirs_and_files(path: Path):
             files.append(item.name)
     return sorted(folders), sorted(files)
 
-def generate_all_folders_from_files(root_path: Path) -> set[Path]:
-    all_dirs = set()
-
-    # Идём по всем файлам, даже глубоко
-    for file in root_path.rglob('*'):
-        if file.is_file():
-            for parent in file.parents:
-                if root_path in parent.parents or parent == root_path:
-                    all_dirs.add(parent)
-    return all_dirs
-
 def generate_index(root_path: str):
-    root = Path(root_path).resolve()
-    if not root.exists():
-        print(f"Path {root} doesn't exist")
-        return
+    root = Path(root_path)
 
-    all_dirs = generate_all_folders_from_files(root)
+    # Гарантированно обходим ВСЕ папки, включая те, где только файлы
+    all_dirs = [p for p in root.rglob('*') if p.is_dir()]
+    all_dirs.append(root)  # не забываем про сам корень
 
     for path in all_dirs:
         folders, files = get_visible_dirs_and_files(path)
@@ -40,7 +28,8 @@ def generate_index(root_path: str):
             "files": files
         }
         index_path = path / 'index.json'
-        index_path.write_text(json.dumps(index, indent=2))
+        with open(index_path, 'w') as f:
+            json.dump(index, f, indent=2)
 
 if __name__ == '__main__':
     generate_index('resources')
