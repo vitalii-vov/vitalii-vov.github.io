@@ -17,6 +17,11 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: List resources directory
+        run: |
+          echo "Listing resources folder:"
+          ls -R resources
+
       - name: Generate index.json files
         run: python generate_index.py
 
